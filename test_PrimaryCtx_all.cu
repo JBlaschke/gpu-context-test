@@ -19,15 +19,32 @@ int main (int argc, char * argv[]) {
 
     printf("Checking state of primary context -- after a cudaMalloc on each device\n");
 
+    int M = 1000;
+    int * h_x = (int *) malloc(M*sizeof(int));
+    int * h_y = (int *) calloc(M, sizeof(int));
+    for (int i=0; i<M; i++) h_x[i] = 10;
+    
+
     for (int i=0; i<n_dev; i++) {
         cudaSetDevice(i);
-        void * p;
-        cudaMalloc(& p, 1);
+        int * d_x, * d_y;
+        api_malloc(& d_x, M);
+        api_malloc(& d_y, M);
+        api_HtoD(h_x, d_x, M);
+        api_HtoD(h_y, d_y, M);
+        saxpy_int<<<(M+255)/256, 256>>>(M, 1, d_x, d_y);
+        api_DtoH(h_x, d_x, M);
+        api_DtoH(h_y, d_y, M);
+        cudaFree(d_x);
+        cudaFree(d_y);
+        printf("Device %d work result: %d\n", i, h_y[0]);
     }
 
     cudaSetDevice(0);
 
     check_primary_ctx(n_dev);
 
+    free(h_x);
+    free(h_y);
     return 0;
 }
