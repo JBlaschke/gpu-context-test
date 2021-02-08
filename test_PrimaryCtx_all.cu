@@ -23,7 +23,6 @@ int main (int argc, char * argv[]) {
     int * h_x = (int *) malloc(M*sizeof(int));
     int * h_y = (int *) calloc(M, sizeof(int));
     for (int i=0; i<M; i++) h_x[i] = 10;
-    
 
     for (int i=0; i<n_dev; i++) {
         cudaSetDevice(i);
