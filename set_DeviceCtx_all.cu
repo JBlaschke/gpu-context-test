@@ -1,12 +1,6 @@
 #include <cuda.h>
 #include <stdio.h>
-
-
-typedef struct {
-    int id;
-    unsigned int flags;
-    int active;
-} primaryCtxState;
+#include <util.h>
 
 
 
@@ -16,30 +10,11 @@ int main (int argc, char * argv[]) {
     cudaGetDeviceCount(& n_dev);
 
     printf("%d devices are available\n", n_dev);
-
     if (n_dev <= 0) return 1;
 
 
-    primaryCtxState state[n_dev];
-
-
     printf("Checking state of primary context -- before first CUDA runtime API call\n");
-
-
-    for (int i=0; i<n_dev; i++) {
-        state[i].id = i;
-        cuDevicePrimaryCtxGetState(
-                state[i].id,
-                & state[i].flags, & state[i].active
-            );
-    }
-
-    for (int i=0; i<n_dev; i++) {
-        printf(
-                "Device %d state: flags=%d, active=%d\n",
-                state[i].id, state[i].flags, state[i].active
-            );
-    }
+    check_primary_ctx(n_dev);
 
 
     printf("Checking state of primary context -- after a cudaMalloc on each device\n");
@@ -54,20 +29,7 @@ int main (int argc, char * argv[]) {
         cudaMalloc(& p, 1);
     }
 
-    for (int i=0; i<n_dev; i++) {
-        cuDevicePrimaryCtxGetState(
-                state[i].id,
-                & state[i].flags, & state[i].active
-            );
-    }
-
-    for (int i=0; i<n_dev; i++) {
-        printf(
-                "Device %d state: flags=%d, active=%d\n",
-                state[i].id, state[i].flags, state[i].active
-            );
-    }
-
+    check_primary_ctx(n_dev);
 
     return 0;
 }
