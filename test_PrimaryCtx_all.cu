@@ -17,7 +17,7 @@ int main (int argc, char * argv[]) {
     check_primary_ctx(n_dev);
 
 
-    printf("Checking state of primary context -- after a cudaMalloc on each device\n");
+    printf("Checking state of primary context -- after saxpy on each device sequentially\n");
 
     int M = 1000;
     int * h_x = (int *) malloc(M*sizeof(int));
