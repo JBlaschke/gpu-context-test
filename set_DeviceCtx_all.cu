@@ -30,6 +30,7 @@ int main (int argc, char * argv[]) {
     for (int i=0; i<n_dev; i++) {
         cuDeviceGet(& device[i], i);
         cuCtxCreate(& context[i], 0, device[i]);
+        cuCtxPushCurrent(context[i]);
 
         int * d_x, * d_y;
         api_malloc(& d_x, M);
